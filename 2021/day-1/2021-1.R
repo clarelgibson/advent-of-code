@@ -15,14 +15,14 @@ library(RcppRoll)       # for calculating rolling sums
 # https://adventofcode.com/2021/day/1
 
 # READ DATA ##########################################################
-# Read Day 1 input into a character vector
-day_1_input <- readLines("2021/data-in/2021-1-data.txt") %>% 
+# Read Day 1 input into a tibble
+d01 <- readLines("2021/day-1/2021-1-data.txt") %>% 
   as.numeric() %>% 
   as_tibble()
 
 # PART 1 #############################################################
 # Count how many values larger than previous
-df_1_1 <- day_1_input %>% 
+df_1_1 <- d01 %>% 
   # add a column to return the prior value for each row
   mutate(lag = lag(value)) %>% 
   # add a column to determine if lag is greater than value
@@ -38,7 +38,7 @@ answer_1_1
 
 # PART 2 #############################################################
 # Count how many sliding windows larger than previous
-df_1_2 <- day_1_input %>% 
+df_1_2 <- d01 %>% 
   # add a column to calculate the rolling sum
   mutate(roll_sum = roll_sum(value,
                              n = 3,
