@@ -1,5 +1,6 @@
 ---
 title: "Advent of Code 2021"
+subtitle: "Day 1"
 author: "Clare Gibson"
 date: "`r Sys.Date()`"
 output:
@@ -12,6 +13,7 @@ output:
 # Load packages
 library(knitr)
 library(tidyverse)
+library(RcppRoll)
 
 # Knitr Options
 opts_chunk$set(
@@ -75,12 +77,12 @@ In this example, there are 7 measurements that are larger than the previous meas
 
 ```{r day-1-input}
 # Read Day 1 input into a character vector
-day_1_input <- readLines("data-in/1-1-data.txt") %>% 
+day_1_input <- readLines("data-in/2021-1-data.txt") %>% 
   as.numeric() %>% 
   as.tibble()
 ```
 
-```{r day-1-answer}
+```{r day-1-part-1}
 # Count how many values larger than previous
 df_1_1 <- day_1_input %>% 
   # add a column to return the prior value for each row
@@ -135,3 +137,25 @@ H: 792 (increased)
 In this example, there are 5 sums that are larger than the previous sum.
 
 Consider sums of a three-measurement sliding window. **How many sums are larger than the previous sum?**
+```{r day-1-part-2}
+# Count how many sliding windows larger than previous
+df_1_2 <- day_1_input %>% 
+  # add a column to calculate the rolling sum
+  mutate(roll_sum = roll_sum(value,
+                             n = 3,
+                             align = "left",
+                             fill = NA)) %>% 
+  # add a column to return the prior roll_sum for each row
+  mutate(lag = lag(roll_sum)) %>% 
+  # add a column to determine if lag is greater than value
+  mutate(answer = roll_sum > lag)
+
+# Calculate the sum of TRUE values in answer
+answer_1_2 <- paste("There are",
+                    sum(df_1_2$answer, na.rm=TRUE),
+                    "values greater than the previous.")
+
+# Print the answer
+answer_1_2
+```
+

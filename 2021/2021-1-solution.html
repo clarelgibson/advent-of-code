@@ -11,7 +11,7 @@
 
 <meta name="author" content="Clare Gibson" />
 
-<meta name="date" content="2021-12-19" />
+<meta name="date" content="2021-12-21" />
 
 <title>Advent of Code 2021</title>
 
@@ -166,8 +166,9 @@ pre code {
 
 
 <h1 class="title toc-ignore">Advent of Code 2021</h1>
+<h3 class="subtitle">Day 1</h3>
 <h4 class="author">Clare Gibson</h4>
-<h4 class="date">2021-12-19</h4>
+<h4 class="date">2021-12-21</h4>
 
 </div>
 
@@ -221,7 +222,7 @@ pre code {
 <h2>Part 1</h2>
 <p><strong>How many measurements are larger than the previous measurement?</strong></p>
 <pre class="r"><code># Read Day 1 input into a character vector
-day_1_input &lt;- readLines(&quot;data-in/1-1-data.txt&quot;) %&gt;% 
+day_1_input &lt;- readLines(&quot;data-in/2021-1-data.txt&quot;) %&gt;% 
   as.numeric() %&gt;% 
   as.tibble()</code></pre>
 <pre class="r"><code># Count how many values larger than previous
@@ -267,6 +268,26 @@ G: 769 (increased)
 H: 792 (increased)</code></pre>
 <p>In this example, there are 5 sums that are larger than the previous sum.</p>
 <p>Consider sums of a three-measurement sliding window. <strong>How many sums are larger than the previous sum?</strong></p>
+<pre class="r"><code># Count how many sliding windows larger than previous
+df_1_2 &lt;- day_1_input %&gt;% 
+  # add a column to calculate the rolling sum
+  mutate(roll_sum = roll_sum(value,
+                             n = 3,
+                             align = &quot;left&quot;,
+                             fill = NA)) %&gt;% 
+  # add a column to return the prior roll_sum for each row
+  mutate(lag = lag(roll_sum)) %&gt;% 
+  # add a column to determine if lag is greater than value
+  mutate(answer = roll_sum &gt; lag)
+
+# Calculate the sum of TRUE values in answer
+answer_1_2 &lt;- paste(&quot;There are&quot;,
+                    sum(df_1_2$answer, na.rm=TRUE),
+                    &quot;values greater than the previous.&quot;)
+
+# Print the answer
+answer_1_2</code></pre>
+<pre><code>## [1] &quot;There are 1418 values greater than the previous.&quot;</code></pre>
 </div>
 </div>
 
