@@ -1,4 +1,4 @@
-# Title:       Day 1
+# Title:       Day 1: Sonar Sweep
 # Project:     Advent of Code
 # Date:        2021-12-21
 # Author:      Clare Gibson
