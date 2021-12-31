@@ -4,7 +4,7 @@
 # Author:      Clare Gibson
 
 # SUMMARY ############################################################
-# This script contains the code needed to solve the example Day 3
+# This script contains the code needed to solve the Day 3
 # puzzles in the 2021 Advent of Code challenge.
 
 # PACKAGES ###########################################################
