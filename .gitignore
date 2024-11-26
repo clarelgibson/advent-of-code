@@ -45,4 +45,4 @@ vignettes/*.pdf
 .Renviron
 
 # Input data
-*/data/
+*.txt
