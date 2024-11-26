@@ -139,10 +139,35 @@ adjacent <-
     !is.na(part_number)
   )
 
-# Find the solutions
+# Find the solution
 solution_03a <- 
   adjacent |> 
   select(part_id, part_number) |> 
   distinct() |> 
   summarise(sum_of_parts = sum(part_number)) |> 
+  pull()
+
+# Part 2 ------------------------------------------------------------------
+gears <- 
+  adjacent |> 
+  select(
+    adj_x,
+    adj_y,
+    adj_char,
+    part_number
+  ) |> 
+  distinct() |> 
+  filter(adj_char == "*") |> 
+  group_by(adj_x, adj_y) |> 
+  summarise(
+    count_of_parts = n(),
+    gear_ratio = prod(part_number)
+  ) |> 
+  ungroup() |> 
+  filter(count_of_parts == 2)
+
+# Find the solution
+solution_03b <- 
+  gears |> 
+  summarise(sum_of_ratios = sum(gear_ratio)) |> 
   pull()
