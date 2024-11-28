@@ -4,11 +4,11 @@ source(here::here("R/utils.R"))
 # Set variables
 year <- "2023"
 day <- "04"
-test <- T
+test <- F
 
 # Read input data
-input_04 <- read_data(year, day)
-test_04 <- read_data(year, day, TRUE)
+input_04 <- read_data_vec(year, day)
+test_04 <- read_data_vec(year, day, TRUE)
 
 # Set data variable to use either test or real data
 data_04 <- if(test == TRUE) {
@@ -18,85 +18,33 @@ data_04 <- if(test == TRUE) {
 }
 
 # Part 1 ------------------------------------------------------------------
-df <- 
-  data_04 |> 
-  separate_wider_delim(
-    cols = input,
-    delim = ":",
-    names = c("card", "values")
-  ) |> 
-  mutate(
-    card = as.numeric(str_extract(card, "\\d+"))
-  ) |> 
-  separate_wider_delim(
-    cols = values,
-    delim = "|",
-    names = c("winning","yours")
-  ) |> 
-  pivot_longer(
-    cols = !card,
-    names_to = "number_type",
-    values_to = "number"
-  ) |> 
-  separate_longer_delim(
-    cols = number,
-    delim = " "
-  ) |> 
-  mutate(number = as.numeric(number)) |> 
-  filter(!is.na(number))
+winning <- stringr::str_extract(data_04, "\\|\\s*(\\d*\\s?)*") |>
+  stringr::str_remove_all("(\\|\\s*|\\s*$)") |>
+  stringr::str_split("\\s+") |>
+  lapply(as.integer)
 
-winning <- 
-  df |> 
-  filter(number_type == "winning") |> 
-  select(card, number)
+cards <- stringr::str_extract(data_04, ":\\s*(\\d*\\s)*") |>
+  stringr::str_remove_all("(^\\:\\s*|\\s$)") |>
+  stringr::str_split("\\s+") |>
+  lapply(as.integer)
 
-yours <- 
-  df |> 
-  filter(number_type == "yours") |> 
-  select(card, number)
+# Part 1: Matching numbers double points
+result <- 0L
+for (i in seq_along(cards)) {
+  points <- sum(cards[[i]] %in% winning[[i]])
+  if (points > 0) result <- result + 2 ^(points - 1)
+}
 
-matches <- 
-  winning |> 
-  inner_join(yours) |> 
-  summarise(
-    matches = n(),
-    .by = card
-  ) |> 
-  mutate(
-    score = 2^(matches - 1)
-  )
+solution_04a <- result
 
-# Find the solution
-solution_04a <- 
-  matches |> 
-  summarise(total_score = sum(score)) |> 
-  pull(total_score)
+# Part 2: Append the pool of cards for every match with the next n cards where
+# n is the number of matches
+n_cards <- rep(1, length(data_04))
+for (i in seq_along(n_cards)) {
+  if (i == 0) next
+  n <- n_cards[[i]]
+  wins <- sum(winning[[i]] %in% cards[[i]])
+  n_cards[seq_len(wins) + i] <- n_cards[seq_len(wins) + i] + n
+}
 
-# Part 2 ------------------------------------------------------------------
-highest_card <- max(df$card)
-
-copies <- 
-  matches |> 
-  select(
-    r1_card = card,
-    r1_matches = matches
-  ) |> 
-  rowwise() |> 
-  mutate(
-    r2_card = list(seq(r1_card + 1, min(r1_card + r1_matches, highest_card)))
-  ) |> 
-  unnest(r2_card) |> 
-  ungroup() |> 
-  left_join(
-    select(
-      matches,
-      r2_card = card,
-      r2_matches = matches
-    )
-  ) |> 
-  mutate(r2_matches = replace_na(r2_matches, 0)) |> 
-  rowwise() |> 
-  mutate(
-    r3_card = list(seq(r2_card + 1, min(r2_card + r2_matches, highest_card)))
-  ) |> 
-  unnest(r3_card)
+solution_04b <- sum(n_cards)
