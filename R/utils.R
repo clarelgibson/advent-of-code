@@ -6,6 +6,7 @@ library(here)
 library(tidyverse)
 library(stringi)
 library(janitor)
+library(googlesheets4)
 
 # Functions ---------------------------------------------------------------
 read_data <- function(year, day, test=FALSE){
